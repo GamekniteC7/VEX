@@ -54,6 +54,36 @@ main() {
 - The order of `attach` statements does not matter.
 - Circular attachments are a **compile-time error**.
 
+### Namespaces
+
+To avoid typing full file names every time you call a function from an attached file, you can define a `NAMESPACE` block to create short aliases.
+
+``` VEX
+NAMESPACE {
+    file_name1: alias1,
+    file_name2: alias2
+}
+```
+
+**Example:**
+
+``` VEX
+// main.vxl
+attach window
+
+NAMESPACE {
+    window: w
+}
+
+main() {
+    // Instead of window::function_name();
+    w::function_name();
+}
+```
+
+- Technically, `NAMESPACE` blocks can be placed anywhere in the file, but it is customary to place them at the top of the file, typically right after your `attach` statements.
+- You can define multiple `NAMESPACE` blocks in a single file, though it is usually cleaner to group all aliases into one block.
+
 ---
 
 ## Functions
@@ -186,6 +216,12 @@ Method names must be **unique within a file** but can share names across files. 
 
 ``` VEX
 x.file_name::method_name()
+```
+
+If a namespace alias is defined for the file, you can use the alias instead:
+
+``` VEX
+x.alias::method_name()
 ```
 
 If a method name exists in multiple attached files and no file is specified, VEX looks for the method in the **current file**. If it isn't found there, a compile-time error is raised requiring explicit file qualification.

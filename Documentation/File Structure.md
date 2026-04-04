@@ -46,3 +46,33 @@ main() {
 - Attached declarations are always called with explicit file qualification: `file_name::function_name`.
 - The order of `attach` statements does not matter.
 - Circular attachments are a **compile-time error**.
+
+### Namespaces
+
+To avoid typing full file names every time you call a function from an attached file, you can define a `NAMESPACE` block to create short aliases.
+
+``` VEX
+NAMESPACE {
+    file_name1: alias1,
+    file_name2: alias2
+}
+```
+
+**Example:**
+
+``` VEX
+// main.vxl
+attach window
+
+NAMESPACE {
+    window: w
+}
+
+main() {
+    // Instead of window::function_name();
+    w::function_name();
+}
+```
+
+- Technically, `NAMESPACE` blocks can be placed anywhere in the file, but it is customary to place them at the top of the file, typically right after your `attach` statements.
+- You can define multiple `NAMESPACE` blocks in a single file, though it is usually cleaner to group all aliases into one block.

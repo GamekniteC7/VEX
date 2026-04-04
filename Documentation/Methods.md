@@ -82,6 +82,12 @@ Method names must be **unique within a file** but can share names across files. 
 x.file_name::method_name()
 ```
 
+If a namespace alias is defined for the file, you can use the alias instead:
+
+``` VEX
+x.alias::method_name()
+```
+
 If a method name exists in multiple attached files and no file is specified, VEX looks for the method in the **current file**. If it isn't found there, a compile-time error is raised requiring explicit file qualification.
 
 > Method overloading (same name, different types) is **not supported** within a file.
