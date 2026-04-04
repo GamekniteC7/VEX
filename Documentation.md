@@ -61,7 +61,7 @@ main() {
 Functions are declared with the `fn` keyword:
 
 ```
-fn function_name(parameter_name: type) >> return_type {
+fn function_name(mutability parameter_name: type) >> return_type {
 
 }
 ```
@@ -70,11 +70,12 @@ fn function_name(parameter_name: type) >> return_type {
 - `return` is only used for **early exits**.
 - **Named arguments are required** when calling a function. Omitting the name is a compile-time error.
 - The return type `()` represents void (no return value).
+- There are no anonymous functions (lambdas) or first-class functions in VEX.
 
 **Example:**
 
 ```
-fn add(a: int, b: int) >> int {
+fn add(mut a: i32, b: i32) >> i32 {
     a + b;
 }
 
@@ -101,26 +102,6 @@ fn outer() >> () {
 }
 ```
 
-### First-Class Functions
-
-Functions can be passed as arguments. The full signature of the function is written inline as the parameter type:
-
-```
-fn apply(fn: function_name(x: int) >> int, x: int) >> int {
-    fn(x: x);
-}
-```
-
-Functions from other files are referenced as `file_name::function_name`:
-
-```
-fn apply(fn: file_name::function_name(x: int) >> int, x: int) >> int {
-    fn(x: x);
-}
-```
-
-> There are no anonymous functions (lambdas) in VEX.
-
 ---
 
 ## Methods
@@ -136,18 +117,18 @@ md method_name(parameter_name: type) >> return_type {
 - Methods follow the same return rules as functions (implicit return, `return` for early exits).
 - Methods are called using **dot notation** with parentheses: the value before the dot is automatically passed as the first parameter.
 - Methods **implicitly reassign** the result back to the caller variable. The caller must therefore be `mut`.
-- The return type of a method must not necessarily match the original type — after a method call, the variable's type changes to the return type of the method.
+- The return type of a method does not need to match the original type — after a method call, the variable's type changes to the return type of the method.
 - Named arguments are required for any additional parameters.
 - `pub md` makes a method available across files.
 
 **Example:**
 
 ```
-md square(x: int) >> int {
+md square(mut x: i32) >> i32 {
     x * x;
 }
 
-let mut int x = 5;
+let mut x: i32 = 5;
 x.square()      // equivalent to: x = square(x: x)
                 // x is now 25
 ```
@@ -155,7 +136,7 @@ x.square()      // equivalent to: x = square(x: x)
 **Type change after method call:**
 
 ```
-let mut int x = 5;
+let mut x: i32 = 5;
 x.toString()    // x is now a String
 ```
 
@@ -197,7 +178,7 @@ x.abs();
 
 ### Method Types
 
-A method's applicable type is determined by its first parameter's type. A method declared with `(x: int)` will only work on integers.
+A method's applicable type is determined by its first parameter's type. A method declared with `(x: i32)` will only work on `i32`.
 
 ### Method Naming
 
@@ -218,48 +199,48 @@ If a method name exists in multiple attached files and no file is specified, VEX
 Variables are declared with the `let` keyword:
 
 ```
-let type name = value;
+let name: type = value;
 ```
 
 ### Mutability
 
-- `let type name = value;` → **immutable** (constant). Reassigning transfers ownership but does not allow mutation.
-- `let mut type name = value;` → **mutable**.
+- `let name: type = value;` → **immutable** (constant). Reassigning transfers ownership but does not allow mutation.
+- `let mut name: type = value;` → **mutable**.
 
 ```
-let int x = 5;         // immutable
-let mut int y = 5;     // mutable
+let x: int = 5;         // immutable
+let mut y: i32 = 5;     // mutable
 ```
 
-Attempting to mutate an immutable variable is a compile-time error. Reassigning an immutable variable transfers ownership — the old binding becomes invalid after the move, as in Rust.
+Attempting to mutate an immutable variable is a compile-time error. Reassigning an immutable variable transfers ownership — the old binding becomes invalid after the move.
 
 ### Type Inference
 
 Inside function or method parameters, `name: type` doubles as a variable declaration. Outside of parameters, type inference is supported — the compiler can infer the type from the assigned value:
 
 ```
-added = add(a: 5, b: 7);  // type inferred from return type of add()
+let added = add(a: 5, b: 7);  // type inferred from return type of add()
 ```
 
 ---
 
-## Types
+## Data Types
 
 ### Integers
 
 |Type|Description|
 |---|---|
-|`i8`, `i16`, `i32`, `i64`|Signed integers of explicit size|
-|`int`|Signed integer — compiler picks the smallest fitting type|
-|`u8`, `u16`, `u32`, `u64`|Unsigned integers of explicit size|
-|`uint`|Unsigned integer — compiler picks the smallest fitting type|
+|`i8`, `i16`, `i32`, `i64`, `i128`|Signed integers of explicit size|
+|`int`|Signed integer — compiler picks the smallest fitting type at declaration (immutable variables only)|
+|`u8`, `u16`, `u32`, `u64`, `u128`|Unsigned integers of explicit size|
+|`uint`|Unsigned integer — compiler picks the smallest fitting type at declaration (immutable variables only)|
 
 ### Floats
 
 |Type|Description|
 |---|---|
-|`f8`, `f16`, `f32`, `f64`|Floats of explicit size|
-|`float`|Float — compiler picks the smallest fitting type|
+|`f8`, `f16`, `f32`, `f64`, `f128`|Floats of explicit size|
+|`float`|Float — compiler picks the smallest fitting type at declaration (immutable variables only)|
 
 ### Other Types
 
@@ -284,8 +265,8 @@ fn hello() >> () {
 **As a value** — a variable that has no value yet:
 
 ```
-let int x = ();   // x is an int holding no value
-let int y;        // equivalent — y is also an int holding no value
+let x: int = ();   // x is an int holding no value
+let y: int;        // equivalent — y is also an int holding no value
 ```
 
 #### Checking for None
@@ -293,7 +274,7 @@ let int y;        // equivalent — y is also an int holding no value
 Use `==` to check if a variable is `()`:
 
 ```
-if (x == ()) {
+if x == () {
     // handle the none case
 } else {
     // x is guaranteed to have a value here
@@ -305,24 +286,24 @@ if (x == ()) {
 The compiler tracks `()` values and raises a **compile-time error** if a `()` value is used in an operation without first being checked:
 
 ```
-let int x;
-let int y = x + 5;   // compile-time error — x might be ()
+let x: int;
+let y: int = x + 5;   // compile-time error — x might be ()
 
-if (x == ()) {
+if x == () {
     // handle none
 } else {
-    let int y = x + 5;   // valid — x is guaranteed not to be ()
+    let y: int = x + 5;   // valid — x is guaranteed not to be ()
 }
 ```
 
 Passing a `()` value to a function is allowed. The compile-time error is only triggered at the point where the value is actually used inside the function:
 
 ```
-fn add(a: int, b: int) >> int {
+fn add(mut a: i32, b: i32) >> i32 {
     a + b;   // compile-time error if a or b might be ()
 }
 
-let int x;
+let x: int;
 add(a: x, b: 5);   // fine — passing () is allowed
 ```
 
@@ -352,8 +333,8 @@ Structs are custom data types that group named fields together under one type.
 
 ```
 struct Rectangle {
-    mut width: float,
-    height: float,
+    mut width: f32,
+    height: f32,
 }
 ```
 
@@ -376,33 +357,33 @@ Rectangle.default() {
 
 ```
 // explicit values
-let Rectangle r = Rectangle(width: 5.0, height: 3.0);
+let r: Rectangle = Rectangle(width: 5.0, height: 3.0);
 
 // all defaults
-let Rectangle r2 = Rectangle();
+let r2: Rectangle = Rectangle();
 
 // partial defaults — height: with nothing after colon means use default
-let Rectangle r3 = Rectangle(width: 5.0, height:);
+let r3: Rectangle = Rectangle(width: 5.0, height:);
 
 // override a mut field to immutable at instantiation
-let Rectangle r4 = Rectangle(imut width: 5.0, height: 3.0);
+let r4: Rectangle = Rectangle(imut width: 5.0, height: 3.0);
 ```
 
 > Leaving a field empty (e.g. `height:`) when no default is defined is a **compile-time error**.
 
 ### Field Access
 
-Fields are accessed using the `^` operator:
+Fields are accessed using the `'` operator:
 
 ```
-r^width    // 5.0
-r^height   // 3.0
+r'width    // 5.0
+r'height   // 3.0
 ```
 
 Nested struct field access chains naturally:
 
 ```
-line^start^width
+line'start'width
 ```
 
 ### Mutability
@@ -416,9 +397,9 @@ line^start^width
 Methods can be called directly on struct fields. The field must be `mut` since the result is reassigned back to it:
 
 ```
-r^width.square()
+r'width.square()
 // equivalent to:
-r^width = square(x: r^width);
+r'width = square(x: r'width);
 ```
 
 ---
@@ -431,8 +412,8 @@ Enums define a type with a fixed set of possible named variants. Variants can op
 
 ```
 enum Shape {
-    Circle(radius: float);
-    Rectangle(width: float, height: float);
+    Circle(radius: f32);
+    Rectangle(width: f32, height: f32);
     Empty();
 }
 ```
@@ -445,8 +426,8 @@ enum Shape {
 ### Instantiation
 
 ```
-let s = Circle(radius: 5.0);
-let e = Empty();
+let s: Shape = Circle(radius: 5.0);
+let e: Shape = Empty();
 ```
 
 ### Field Access
@@ -481,7 +462,7 @@ Data carried by a variant is unpacked and bound to a new name in the match arm. 
 A match can also act as a special function that takes an enum and returns a value based on the variant. It is called like a regular function with named arguments:
 
 ```
-match area(s: Shape) >> float {
+match area(s: Shape) >> f32 {
     Circle(radius: r) => { r * r * 3.14; }
     Rectangle(width: w, height: h) => { w * h; }
     Empty() => { return; }
@@ -506,8 +487,8 @@ VEX has a precise system for controlling how values are passed and shared.
 By default, assigning a variable to another transfers ownership. The original binding becomes invalid:
 
 ```
-let int x = 5;
-let y = x;      // ownership transferred
+let x: i32 = 5;
+let y: i32 = x;      // ownership transferred
 // x is now invalid
 ```
 
@@ -516,57 +497,112 @@ let y = x;      // ownership transferred
 To copy a value without transferring ownership, use `(copy)`:
 
 ```
-let int x = 5;
-let mut y = (copy) x;   // y gets a copy of x, x stays valid
+let x: i32 = 5;
+let y: i32 = (copy) x;   // y gets a copy of x, x stays valid
+// both x and y are 5
+```
+
+### Immutable References
+
+`&x` creates a live reference to `x`. The reference tracks changes to `x` — if `x` changes, the reference reflects the new value. The original `x` stays valid and its ownership is not transferred.
+
+```
+let mut x: i32 = 5;
+let y: i32 = &x;    // y is a live reference to x
+x + 2;              // x is now 7
+// y is also 7
+```
+
+Unlike `(copy)`, a reference is not a new independent variable — it is a live link to the original.
+
+### Mutable References
+
+`mut&x` creates a mutable live reference. Changing the mutable reference changes the original variable and all other references to it. The original variable must be `mut`, and the holder of a `mut&` reference must also be `mut`.
+
+```
+let mut x: i32 = 5;
+let mut y: i32 = mut&x;   // y is a mutable reference to x
+
+y + 2;    // x is now 7, all references to x are now 7
+x + 3;    // x is now 10, y is also 10
+```
+
+There can be as many mutable or immutable references to a variable as you want. Changing the original or any mutable reference updates all of them.
+
+### Dereferencing
+
+To remove a reference from a variable, use `deref()` or `cderef()`:
+
+**`deref()`** — eliminates the reference and drops the variable entirely:
+
+```
+let x: i32 = 5;
+let y: i32 = &x;
+
+y.deref();       // y is eliminated and dropped
+println(y);      // compile-time error: y doesn't exist
+```
+
+**`cderef()`** — eliminates the reference and copies the current value of the original into the holder. Requires the holder to be `mut`. The variable takes the mutability it had before becoming a reference:
+
+```
+let mut x: i32 = 5;
+let mut y: i32 = &x;
+
+x + 2;           // x is now 7
+y.cderef();      // y is now an independent variable with value 7
+println(y);      // valid — y is now 7
+```
+
+### References and Ownership
+
+All references to a variable must be eliminated with `deref()` or `cderef()` before the variable's ownership can be transferred:
+
+```
+let x: i32 = 5;
+let y: i32 = &x;
+
+let z: i32 = x;   // compile-time error — y still holds a reference to x
+y.deref();
+let z: i32 = x;   // valid — no more references to x
 ```
 
 ### References in Function Parameters
 
-`&` is **only valid in function and method parameters** — not in variable declarations. Passing `&x` passes a live reference to `x` for the duration of the function call. After the call, the reference is gone. The original `x` stays valid.
+`&x` and `mut&x` can also be passed as function parameters. A parameter reference is only live for the duration of the function call:
 
 ```
-fn double(x: &int) >> int {
+fn double(mut x: &i32) >> i32 {
     x * 2;
 }
 
 double(x: &x);   // x stays valid after the call
 ```
 
-> References are only live for the duration of the function call. A reference **cannot be returned** from a function — `&type` is not a valid return type and causes a compile-time error.
-
-### Copying in Function Parameters
-
-To pass a copy as a parameter instead of a reference:
-
-```
-fn double(x: (copy) int) >> int {
-    x * 2;
-}
-```
+> A reference **cannot be returned** from a function — `&type` is not a valid return type and causes a compile-time error.
 
 ### Full Comparison
+
+|Syntax|Tracks changes|Can change original|Original must be `mut`|Holder must be `mut`|
+|---|---|---|---|---|
+|`(copy) x`|No|No|No|No|
+|`&x`|Yes|No|No|No|
+|`mut&x`|Yes|Yes|Yes|Yes|
 
 |Syntax|Context|Effect|
 |---|---|---|
 |`let y = x`|variable declaration|ownership transferred, x invalid|
 |`let y = (copy) x`|variable declaration|y gets copy, x stays valid|
+|`let y = &x`|variable declaration|live reference, x stays valid|
+|`let mut y = mut&x`|variable declaration|mutable live reference, x stays valid|
 |`fn(param: x)`|function parameter|ownership transferred, x invalid|
 |`fn(param: &x)`|function parameter|live reference for duration of call, x stays valid|
+|`fn(param: mut&x)`|function parameter|mutable reference for duration of call|
 |`fn(param: (copy) x)`|function parameter|copy passed, x stays valid|
 
 ### Compiler Optimization
 
-When `(copy) x` is passed as a parameter and the original `x` is never mutated during the call, the compiler may internally optimize this into a reference — since the result would be identical. The programmer never needs to manage this manually.
-
-### References and Mutation
-
-Holding a reference to a variable while mutating or retyping that variable is a **compile-time error**:
-
-```
-let mut int x = 5;
-fn modify(a: &int, b: &int) >> int { ... }
-modify(a: &x, b: &x);   // error if x is mutated inside modify
-```
+When `(copy) x` is passed as a parameter and the original `x` is never mutated during the call, the compiler may internally optimize this into a reference — since the result would be identical. The compiler will produce a warning suggesting the optimization.
 
 ---
 
@@ -590,6 +626,26 @@ VEX's `&&` and `||` operators have a convenience feature: if a comparison operat
 
 > If both sides already have a comparison operator, no distribution occurs.
 
+### Mathematical Operator Shorthand
+
+Writing a mathematical expression as a standalone statement implicitly assigns the result back to the **first variable** in the expression:
+
+```
+x * x;
+// becomes:
+x = x * x;
+```
+
+With two different variables, the first one is changed:
+
+```
+x * y + z;
+// becomes:
+x = (x * y + z);
+```
+
+> If a literal comes first (e.g. `5 * x`), this is a **compile-time error**. You must write `x = 5 * x` explicitly.
+
 ---
 
 ## Control Flow
@@ -597,10 +653,10 @@ VEX's `&&` and `||` operators have a convenience feature: if a comparison operat
 ### If Statement
 
 ```
-if (condition) {
+if condition {
 
 }
-else if (condition) {
+else if condition {
 
 }
 else {
@@ -610,10 +666,16 @@ else {
 
 ### If-Except Statement
 
-The `if-except` statement executes a block if a condition is true, **except** when a second condition is also true. The `if` part is evaluated first; if it passes, the `except` part is then checked. If the `except` condition is true, the block is **not** executed.
+The `if-except` statement executes a block if a condition is true, **except** when a second condition is also true. The `if` part is evaluated first; if it passes, the `except` part is then checked. If the `except` condition is true, the block is **not** executed. The optional `else except` block executes only when the `except` condition is true. You can still use a normal `else`.
 
 ```
-if (condition) except (exception_condition) {
+if condition except exception_condition {
+
+}
+else except{   // executes only when except is true
+
+}
+else {         // executes when all of the above are false (normal else)
 
 }
 ```
@@ -621,7 +683,7 @@ if (condition) except (exception_condition) {
 ### For Loop
 
 ```
-for (i = 0; i <= 99; i++) {
+for i in 0..99 {
 
 }
 ```
@@ -629,14 +691,14 @@ for (i = 0; i <= 99; i++) {
 ### While Loop
 
 ```
-while (condition) {
+while condition {
 
 }
 ```
 
 ### Loop (Infinite)
 
-`loop` is equivalent to `while (true)`:
+`loop` is equivalent to `while true`:
 
 ```
 loop {
@@ -670,10 +732,10 @@ fn hello_world() >> () {
 ```
 // main.vxl
 main(){
-    added = add(a: 5, b: 7);
+    let added: i32 = add(a: 5, b: 7);
 }
 
-fn add(a: int, b: int) >> int {
+fn add(mut a: i32, b: i32) >> i32 {
     a + b;
 }
 ```
@@ -687,28 +749,28 @@ fn add(a: int, b: int) >> int {
 ```
 // main.vxl
 main(){
-    for (i = 0; i <= 99; i++) {
+    for i in 1..100 {
         println(FizzBuzz(x: &i));
     }
 }
 
-fn FizzBuzz(x: int) >> String {
-    if ((x % 3) && (x % 5) == 0) {
+fn FizzBuzz(mut x: i32) >> String {
+    if (x % 3) && (x % 5) == 0 {
         return "FizzBuzz!";
     }
-    else if (x % 3 == 0) {
+    else if x % 3 == 0 {
         return "Fizz!";
     }
-    else if (x % 5 == 0) {
+    else if x % 5 == 0 {
         return "Buzz!";
     }
     else {
-        return (x.toString());
+        return x.toString();
     }
 }
 ```
 
-**Output:** FizzBuzz sequence from 0 to 99.
+**Output:** FizzBuzz sequence from 1 to 100.
 
 ---
 
@@ -717,11 +779,11 @@ fn FizzBuzz(x: int) >> String {
 ```
 // main.vxl
 main(){
-    let mut int x = 5;
+    let mut x: i32 = 5;
     println(x.square());
 }
 
-md square(x: int) >> int {
+md square(mut x: i32) >> i32 {
     x * x;
 }
 ```
