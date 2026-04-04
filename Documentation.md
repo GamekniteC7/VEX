@@ -9,7 +9,7 @@
 
 Every VEX project has one `main.vxl` file. This file contains the entry point of the program — the `main()` function. All other `.vxl` files must be attached to `main.vxl` directly or indirectly to exist in the program.
 
-```
+``` VEX
 main(){
     // entry point
 }
@@ -21,7 +21,7 @@ main(){
 
 Files are attached using the `attach` keyword. Without attachment, a file is completely invisible to the rest of the program.
 
-```
+``` VEX
 // main.vxl
 attach math
 attach utils
@@ -33,14 +33,14 @@ main() {
 
 Attachments can be organized into an intermediate file to keep `main.vxl` clean:
 
-```
+``` VEX
 // modules.vxl
 attach math
 attach utils
 attach graphics
 ```
 
-```
+``` VEX
 // main.vxl
 attach modules
 
@@ -60,7 +60,7 @@ main() {
 
 Functions are declared with the `fn` keyword:
 
-```
+``` VEX
 fn function_name(mutability parameter_name: type) >> return_type {
 
 }
@@ -74,7 +74,7 @@ fn function_name(mutability parameter_name: type) >> return_type {
 
 **Example:**
 
-```
+``` VEX
 fn add(mut a: i32, b: i32) >> i32 {
     a + b;
 }
@@ -92,7 +92,7 @@ add(a: 5, b: 7);
 
 Functions can be nested inside other functions to arbitrary depth. A nested function has access to its own scope and all parent scopes, but not to sibling or outer-sibling scopes.
 
-```
+``` VEX
 fn outer() >> () {
     fn middle() >> () {
         fn inner() >> () {
@@ -108,7 +108,7 @@ fn outer() >> () {
 
 Methods are declared with the `md` keyword:
 
-```
+``` VEX
 md method_name(parameter_name: type) >> return_type {
 
 }
@@ -123,7 +123,7 @@ md method_name(parameter_name: type) >> return_type {
 
 **Example:**
 
-```
+``` VEX
 md square(mut x: i32) >> i32 {
     x * x;
 }
@@ -135,20 +135,20 @@ x.square()      // equivalent to: x = square(x: x)
 
 **Type change after method call:**
 
-```
+``` VEX
 let mut x: i32 = 5;
 x.toString()    // x is now a String
 ```
 
 **With additional parameters:**
 
-```
+``` VEX
 x.pow(b: &y)    // x is auto-referenced, y must be explicitly referenced
 ```
 
 **Using a method as an expression:**
 
-```
+``` VEX
 println(x.square())
 // equivalent to:
 x.square();
@@ -157,7 +157,7 @@ println(x);
 
 **Passing a reference after a method call:**
 
-```
+``` VEX
 add(a: &x.square(), b: 5)
 // equivalent to:
 x.square();
@@ -168,7 +168,7 @@ add(a: &x, b: 5);
 
 Methods can be chained — each method is applied to the result of the previous one:
 
-```
+``` VEX
 x.square().double().abs()
 // equivalent to:
 x.square();
@@ -184,7 +184,7 @@ A method's applicable type is determined by its first parameter's type. A method
 
 Method names must be **unique within a file** but can share names across files. When calling a method from a specific file, use:
 
-```
+``` VEX
 x.file_name::method_name()
 ```
 
@@ -198,7 +198,7 @@ If a method name exists in multiple attached files and no file is specified, VEX
 
 Variables are declared with the `let` keyword:
 
-```
+``` VEX
 let name: type = value;
 ```
 
@@ -207,7 +207,7 @@ let name: type = value;
 - `let name: type = value;` → **immutable** (constant). Reassigning transfers ownership but does not allow mutation.
 - `let mut name: type = value;` → **mutable**.
 
-```
+``` VEX
 let x: int = 5;         // immutable
 let mut y: i32 = 5;     // mutable
 ```
@@ -218,7 +218,7 @@ Attempting to mutate an immutable variable is a compile-time error. Reassigning 
 
 Inside function or method parameters, `name: type` doubles as a variable declaration. Outside of parameters, type inference is supported — the compiler can infer the type from the assigned value:
 
-```
+``` VEX
 let added = add(a: 5, b: 7);  // type inferred from return type of add()
 ```
 
@@ -256,7 +256,7 @@ let added = add(a: 5, b: 7);  // type inferred from return type of add()
 
 **As a return type** — a function that returns nothing:
 
-```
+``` VEX
 fn hello() >> () {
     println("Hello!");
 }
@@ -264,7 +264,7 @@ fn hello() >> () {
 
 **As a value** — a variable that has no value yet:
 
-```
+``` VEX
 let x: int = ();   // x is an int holding no value
 let y: int;        // equivalent — y is also an int holding no value
 ```
@@ -273,7 +273,7 @@ let y: int;        // equivalent — y is also an int holding no value
 
 Use `==` to check if a variable is `()`:
 
-```
+``` VEX
 if x == () {
     // handle the none case
 } else {
@@ -285,7 +285,7 @@ if x == () {
 
 The compiler tracks `()` values and raises a **compile-time error** if a `()` value is used in an operation without first being checked:
 
-```
+``` VEX
 let x: int;
 let y: int = x + 5;   // compile-time error — x might be ()
 
@@ -298,7 +298,7 @@ if x == () {
 
 Passing a `()` value to a function is allowed. The compile-time error is only triggered at the point where the value is actually used inside the function:
 
-```
+``` VEX
 fn add(mut a: i32, b: i32) >> i32 {
     a + b;   // compile-time error if a or b might be ()
 }
@@ -311,7 +311,7 @@ add(a: x, b: 5);   // fine — passing () is allowed
 
 Arrays have a **fixed length** defined at declaration:
 
-```
+``` VEX
 array<type, length>
 ```
 
@@ -319,7 +319,7 @@ array<type, length>
 
 Vectors are like arrays with a **dynamic length**:
 
-```
+``` VEX
 vector<type>
 ```
 
@@ -331,7 +331,7 @@ Structs are custom data types that group named fields together under one type.
 
 ### Declaration
 
-```
+``` VEX
 struct Rectangle {
     mut width: f32,
     height: f32,
@@ -346,7 +346,7 @@ struct Rectangle {
 
 Default field values are defined separately using `.default()`:
 
-```
+``` VEX
 Rectangle.default() {
     width: 1.0,
     height: 1.0,
@@ -355,7 +355,7 @@ Rectangle.default() {
 
 ### Instantiation
 
-```
+``` VEX
 // explicit values
 let r: Rectangle = Rectangle(width: 5.0, height: 3.0);
 
@@ -375,14 +375,14 @@ let r4: Rectangle = Rectangle(imut width: 5.0, height: 3.0);
 
 Fields are accessed using the `'` operator:
 
-```
+``` VEX
 r'width    // 5.0
 r'height   // 3.0
 ```
 
 Nested struct field access chains naturally:
 
-```
+``` VEX
 line'start'width
 ```
 
@@ -396,7 +396,7 @@ line'start'width
 
 Methods can be called directly on struct fields. The field must be `mut` since the result is reassigned back to it:
 
-```
+``` VEX
 r'width.square()
 // equivalent to:
 r'width = square(x: r'width);
@@ -410,7 +410,7 @@ Enums define a type with a fixed set of possible named variants. Variants can op
 
 ### Declaration
 
-```
+``` VEX
 enum Shape {
     Circle(radius: f32);
     Rectangle(width: f32, height: f32);
@@ -425,7 +425,7 @@ enum Shape {
 
 ### Instantiation
 
-```
+``` VEX
 let s: Shape = Circle(radius: 5.0);
 let e: Shape = Empty();
 ```
@@ -434,7 +434,7 @@ let e: Shape = Empty();
 
 Enum variant data is accessed using the `->` operator:
 
-```
+``` VEX
 s->radius   // 5.0
 ```
 
@@ -446,7 +446,7 @@ Methods work on enum values just like any other type, determined by the first pa
 
 A match statement handles each possible variant. **All variants must be covered** — a non-exhaustive match is a compile-time error. A `_` fallback case is supported:
 
-```
+``` VEX
 match s {
     Circle(radius: r) => { ... }
     Rectangle(width: w, height: h) => { ... }
@@ -461,7 +461,7 @@ Data carried by a variant is unpacked and bound to a new name in the match arm. 
 
 A match can also act as a special function that takes an enum and returns a value based on the variant. It is called like a regular function with named arguments:
 
-```
+``` VEX
 match area(s: Shape) >> f32 {
     Circle(radius: r) => { r * r * 3.14; }
     Rectangle(width: w, height: h) => { w * h; }
@@ -486,7 +486,7 @@ VEX has a precise system for controlling how values are passed and shared.
 
 By default, assigning a variable to another transfers ownership. The original binding becomes invalid:
 
-```
+``` VEX
 let x: i32 = 5;
 let y: i32 = x;      // ownership transferred
 // x is now invalid
@@ -496,7 +496,7 @@ let y: i32 = x;      // ownership transferred
 
 To copy a value without transferring ownership, use `(copy)`:
 
-```
+``` VEX
 let x: i32 = 5;
 let y: i32 = (copy) x;   // y gets a copy of x, x stays valid
 // both x and y are 5
@@ -506,7 +506,7 @@ let y: i32 = (copy) x;   // y gets a copy of x, x stays valid
 
 `&x` creates a live reference to `x`. The reference tracks changes to `x` — if `x` changes, the reference reflects the new value. The original `x` stays valid and its ownership is not transferred.
 
-```
+``` VEX
 let mut x: i32 = 5;
 let y: i32 = &x;    // y is a live reference to x
 x + 2;              // x is now 7
@@ -519,7 +519,7 @@ Unlike `(copy)`, a reference is not a new independent variable — it is a live 
 
 `mut&x` creates a mutable live reference. Changing the mutable reference changes the original variable and all other references to it. The original variable must be `mut`, and the holder of a `mut&` reference must also be `mut`.
 
-```
+``` VEX
 let mut x: i32 = 5;
 let mut y: i32 = mut&x;   // y is a mutable reference to x
 
@@ -535,7 +535,7 @@ To remove a reference from a variable, use `deref()` or `cderef()`:
 
 **`deref()`** — eliminates the reference and drops the variable entirely:
 
-```
+``` VEX
 let x: i32 = 5;
 let y: i32 = &x;
 
@@ -545,7 +545,7 @@ println(y);      // compile-time error: y doesn't exist
 
 **`cderef()`** — eliminates the reference and copies the current value of the original into the holder. Requires the holder to be `mut`. The variable takes the mutability it had before becoming a reference:
 
-```
+``` VEX
 let mut x: i32 = 5;
 let mut y: i32 = &x;
 
@@ -558,7 +558,7 @@ println(y);      // valid — y is now 7
 
 All references to a variable must be eliminated with `deref()` or `cderef()` before the variable's ownership can be transferred:
 
-```
+``` VEX
 let x: i32 = 5;
 let y: i32 = &x;
 
@@ -571,7 +571,7 @@ let z: i32 = x;   // valid — no more references to x
 
 `&x` and `mut&x` can also be passed as function parameters. A parameter reference is only live for the duration of the function call:
 
-```
+``` VEX
 fn double(mut x: &i32) >> i32 {
     x * 2;
 }
@@ -612,13 +612,13 @@ When `(copy) x` is passed as a parameter and the original `x` is never mutated d
 
 VEX's `&&` and `||` operators have a convenience feature: if a comparison operator (`==`, `!=`, `<`, `>`, `<=`, `>=`) appears on one side of a `&&` or `||` but not the other, the compiler **distributes** the comparison to the incomplete side automatically.
 
-```
+``` VEX
 (x % 3) && (x % 5) == 0
 // becomes:
 (x % 3 == 0) && (x % 5 == 0)
 ```
 
-```
+``` VEX
 (x % 3) || (x % 5) != 0
 // becomes:
 (x % 3 != 0) || (x % 5 != 0)
@@ -630,7 +630,7 @@ VEX's `&&` and `||` operators have a convenience feature: if a comparison operat
 
 Writing a mathematical expression as a standalone statement implicitly assigns the result back to the **first variable** in the expression:
 
-```
+``` VEX
 x * x;
 // becomes:
 x = x * x;
@@ -638,7 +638,7 @@ x = x * x;
 
 With two different variables, the first one is changed:
 
-```
+``` VEX
 x * y + z;
 // becomes:
 x = (x * y + z);
@@ -652,7 +652,7 @@ x = (x * y + z);
 
 ### If Statement
 
-```
+``` VEX
 if condition {
 
 }
@@ -668,7 +668,7 @@ else {
 
 The `if-except` statement executes a block if a condition is true, **except** when a second condition is also true. The `if` part is evaluated first; if it passes, the `except` part is then checked. If the `except` condition is true, the block is **not** executed. The optional `else except` block executes only when the `except` condition is true. You can still use a normal `else`.
 
-```
+``` VEX
 if condition except exception_condition {
 
 }
@@ -682,7 +682,7 @@ else {         // executes when all of the above are false (normal else)
 
 ### For Loop
 
-```
+``` VEX
 for i in 0..99 {
 
 }
@@ -690,7 +690,7 @@ for i in 0..99 {
 
 ### While Loop
 
-```
+``` VEX
 while condition {
 
 }
@@ -700,7 +700,7 @@ while condition {
 
 `loop` is equivalent to `while true`:
 
-```
+``` VEX
 loop {
 
 }
@@ -712,7 +712,7 @@ loop {
 
 ### Hello World
 
-```
+``` VEX
 // main.vxl
 main(){
     hello_world();
@@ -729,7 +729,7 @@ fn hello_world() >> () {
 
 ### Addition
 
-```
+``` VEX
 // main.vxl
 main(){
     let added: i32 = add(a: 5, b: 7);
@@ -746,7 +746,7 @@ fn add(mut a: i32, b: i32) >> i32 {
 
 ### FizzBuzz
 
-```
+``` VEX
 // main.vxl
 main(){
     for i in 1..100 {
@@ -776,7 +776,7 @@ fn FizzBuzz(mut x: i32) >> String {
 
 ### Methods
 
-```
+``` VEX
 // main.vxl
 main(){
     let mut x: i32 = 5;
