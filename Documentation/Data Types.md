@@ -145,7 +145,7 @@ r.try_get(position: 99); // ()
 Checking containment:
 
 ``` VEX
-if 0..100.contains(x: myValue) {
+if 0..100.contains(n: myValue) {
     // myValue is in range
 }
 ```
