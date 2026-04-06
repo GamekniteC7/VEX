@@ -89,10 +89,63 @@ Arrays have a **fixed length** defined at declaration:
 array<type, length>
 ```
 
+Arrays can be sliced using range syntax:
+
+``` VEX
+array[1..3]   // elements from index 1 to 3 inclusive
+```
+
 ### Vectors
 
 Vectors are like arrays with a **dynamic length**:
 
 ``` VEX
 vector<type>
+```
+
+### Range
+
+A range represents an inclusive sequence of numeric values. Ranges can contain integers or floats, specified by `range<type>`:
+
+``` VEX
+let r: range<i32> = 0..100;    // inclusive range from 0 to 100
+let r2: range<f32> = 0.0..1.0; // float range
+```
+
+The compiler parses ranges left to right — it reads the first number, checks for `..`, then reads the second number. Both sides of `..` must be the same type, enforced by the type checker.
+
+Ranges can be used in `for` loops, as slice indices, and stored as variables.
+
+#### Range Methods
+
+All methods that modify the range require the range to be `mut`:
+
+| Method | Description | Requires `mut` |
+|--------|-------------|----------------|
+| `.shift_pos(by: T)` | Shifts the entire range in the positive direction | Yes |
+| `.shift_neg(by: T)` | Shifts the entire range in the negative direction | Yes |
+| `.add(how_much: T)` | Extends the end of the range | Yes |
+| `.subt(how_much: T)` | Shrinks the end of the range | Yes |
+| `.contains(n: T)` | Returns `true` if the range contains `n` | No |
+| `.get(position: uint)` | Returns the value at the given index (0-based) — panics if out of bounds | No |
+| `.try_get(position: uint)` | Returns `Option<T>` — `()` if out of bounds | No |
+
+**Example:**
+
+``` VEX
+let mut r: range<i32> = 0..10;
+
+r.shift_pos(by: 5);     // r is now 5..15
+r.add(how_much: 5);     // r is now 5..20
+r.contains(n: 12);      // true
+r.get(position: 0);     // 5
+r.try_get(position: 99); // ()
+```
+
+Checking containment:
+
+``` VEX
+if 0..100.contains(x: myValue) {
+    // myValue is in range
+}
 ```

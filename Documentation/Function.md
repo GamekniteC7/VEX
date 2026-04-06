@@ -43,3 +43,16 @@ fn outer() >> () {
     }
 }
 ```
+
+### Generic Functions
+
+Functions can be generic over types using the `<T>` syntax. The type must be specified explicitly at the call site:
+
+``` VEX
+fn first<T>(list: vector<T>) >> Option<T> {
+    // ...
+}
+
+// calling a generic function
+let x: i32 = first<i32>(list: numbers);
+```

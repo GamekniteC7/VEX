@@ -132,6 +132,19 @@ fn outer() >> () {
 }
 ```
 
+### Generic Functions
+
+Functions can be generic over types using the `<T>` syntax. The type must be specified explicitly at the call site:
+
+``` VEX
+fn first<T>(list: vector<T>) >> Option<T> {
+    // ...
+}
+
+// calling a generic function
+let x: i32 = first<i32>(list: numbers);
+```
+
 ---
 
 ## Methods
@@ -210,6 +223,19 @@ x.abs();
 
 A method's applicable type is determined by its first parameter's type. A method declared with `(x: i32)` will only work on `i32`.
 
+### Generic Methods
+
+Methods can also be generic. The type is inferred automatically from the variable the method is called on — no explicit type annotation needed at the call site:
+
+``` VEX
+md first<T>(mut x: T, list: vector<T>) >> Option<T> {
+    // ...
+}
+
+let mut x: i32;
+x.first(list: numbers);  // T is inferred as i32 from x
+```
+
 ### Method Naming
 
 Method names must be **unique within a file** but can share names across files. When calling a method from a specific file, use:
@@ -285,6 +311,7 @@ let added = add(a: 5, b: 7);  // type inferred from return type of add()
 |`bool`|Boolean (`true` / `false`)|
 |`String`|UTF-8 string|
 |`()`|None — the absence of a value|
+|`range<T>`|A range of numeric values — see Range section|
 
 ### None / `()`
 
@@ -351,12 +378,65 @@ Arrays have a **fixed length** defined at declaration:
 array<type, length>
 ```
 
+Arrays can be sliced using range syntax:
+
+``` VEX
+array[1..3]   // elements from index 1 to 3 inclusive
+```
+
 ### Vectors
 
 Vectors are like arrays with a **dynamic length**:
 
 ``` VEX
 vector<type>
+```
+
+### Range
+
+A range represents an inclusive sequence of numeric values. Ranges can contain integers or floats, specified by `range<type>`:
+
+``` VEX
+let r: range<i32> = 0..100;    // inclusive range from 0 to 100
+let r2: range<f32> = 0.0..1.0; // float range
+```
+
+The compiler parses ranges left to right — it reads the first number, checks for `..`, then reads the second number. Both sides of `..` must be the same type, enforced by the type checker.
+
+Ranges can be used in `for` loops, as slice indices, and stored as variables.
+
+#### Range Methods
+
+All methods that modify the range require the range to be `mut`:
+
+| Method | Description | Requires `mut` |
+|--------|-------------|----------------|
+| `.shift_pos(by: T)` | Shifts the entire range in the positive direction | Yes |
+| `.shift_neg(by: T)` | Shifts the entire range in the negative direction | Yes |
+| `.add(how_much: T)` | Extends the end of the range | Yes |
+| `.subt(how_much: T)` | Shrinks the end of the range | Yes |
+| `.contains(n: T)` | Returns `true` if the range contains `n` | No |
+| `.get(position: uint)` | Returns the value at the given index (0-based) — panics if out of bounds | No |
+| `.try_get(position: uint)` | Returns `Option<T>` — `()` if out of bounds | No |
+
+**Example:**
+
+``` VEX
+let mut r: range<i32> = 0..10;
+
+r.shift_pos(by: 5);     // r is now 5..15
+r.add(how_much: 5);     // r is now 5..20
+r.contains(n: 12);      // true
+r.get(position: 0);     // 5
+r.try_get(position: 99); // ()
+```
+
+Checking containment:
+
+``` VEX
+if 0..100.contains(x: myValue) {
+    // myValue is in range
+}
 ```
 
 ---
@@ -377,6 +457,19 @@ struct Rectangle {
 - Fields are **immutable by default**.
 - Use `mut` before a field to make it mutable across all instances.
 - Use `pub struct` to make the struct available across files.
+
+### Generic Structs
+
+Structs can be generic over types:
+
+``` VEX
+struct Pair<T> {
+    first: T,
+    second: T,
+}
+
+let p: Pair<i32> = Pair(first: 1, second: 2);
+```
 
 ### Default Values
 
@@ -681,6 +774,77 @@ x = (x * y + z);
 ```
 
 > If a literal comes first (e.g. `5 * x`), this is a **compile-time error**. You must write `x = 5 * x` explicitly.
+
+---
+
+## Casting
+
+Every type has built-in casting methods.
+
+### Unsafe Casting
+
+`.to_type()` casts a value to the target type. If the cast fails, it panics with the message:
+
+```
+file_name:line_number => Casting {type_before} to {type_after} failed
+```
+
+``` VEX
+let mut x: i64 = 1000;
+x.to_i32()     // x is now i32
+x.to_f64()     // x is now f64
+x.to_string()  // x is now String
+```
+
+### Safe Casting
+
+`.try_to_type()` casts a value to the target type and returns `Result<T, String>` instead of panicking. The error string is `"Casting {type_before} to {type_after} failed"`:
+
+``` VEX
+let mut x: i64 = 1000;
+let result: Result<i32, String> = x.try_to_i32();
+```
+
+---
+
+## String Formatting
+
+Variables and expressions can be embedded directly into strings using `{}`:
+
+``` VEX
+let name: String = "World";
+println("Hello {name}!");   // Hello World!
+```
+
+Any valid VEX expression can be placed inside `{}`, including function calls, method chains, and arithmetic:
+
+``` VEX
+println("Sum: {add(a: 3, b: 4)}");       // Sum: 7
+println("Square: {x.square()}");          // Square: 25
+println("Result: {a + b}");              // Result of expression
+```
+
+The expression inside `{}` follows normal ownership rules.
+
+---
+
+## Comments
+
+Single line comments use `//`:
+
+``` VEX
+// This is a single line comment
+let x: i32 = 5; // inline comment
+```
+
+Multi-line comments use `/* */`:
+
+``` VEX
+/*
+    This is a
+    multi-line comment
+*/
+```
 
 ---
 

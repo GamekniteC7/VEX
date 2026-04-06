@@ -74,6 +74,19 @@ x.abs();
 
 A method's applicable type is determined by its first parameter's type. A method declared with `(x: i32)` will only work on `i32`.
 
+### Generic Methods
+
+Methods can also be generic. The type is inferred automatically from the variable the method is called on — no explicit type annotation needed at the call site:
+
+``` VEX
+md first<T>(mut x: T, list: vector<T>) >> Option<T> {
+    // ...
+}
+
+let mut x: i32;
+x.first(list: numbers);  // T is inferred as i32 from x
+```
+
 ### Method Naming
 
 Method names must be **unique within a file** but can share names across files. When calling a method from a specific file, use:

@@ -15,6 +15,19 @@ struct Rectangle {
 - Use `mut` before a field to make it mutable across all instances.
 - Use `pub struct` to make the struct available across files.
 
+### Generic Structs
+
+Structs can be generic over types:
+
+``` VEX
+struct Pair<T> {
+    first: T,
+    second: T,
+}
+
+let p: Pair<i32> = Pair(first: 1, second: 2);
+```
+
 ### Default Values
 
 Default field values are defined separately using `.default()`:
