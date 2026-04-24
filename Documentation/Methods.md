@@ -1,36 +1,35 @@
-## Methods
+## Methods (Uniform Function Call Syntax)
 
-Methods are declared with the `md` keyword:
+In VEX, there is no special method declaration keyword. Instead, **any function** can be called as a method using **dot notation**. When a function is called as a method, the value before the dot is automatically passed as the first parameter to the function.
 
-``` VEX
-md method_name(parameter_name: type) >> return_type {
+When called as functions, they behave like normal VEX functions. When called as methods, they behave like VEX methods.
 
-}
-```
-
-- Methods follow the same return rules as functions (implicit return, `return` for early exits).
 - Methods are called using **dot notation** with parentheses: the value before the dot is automatically passed as the first parameter.
-- Methods **implicitly reassign** the result back to the caller variable. The caller must therefore be `mut`.
-- The return type of a method does not need to match the original type — after a method call, the variable's type changes to the return type of the method.
+- Methods **implicitly reassign** the result back to the caller variable. The caller must therefore be at least `mut`.
+- The return type of a method does not need to match the original type — after a method call, the variable's type changes to the return type of the function. If a method changes the variable's type, the variable **must** be declared as `tmut` (type-mutable). Calling a type-changing method on a purely `mut` variable is a compile-time error.
 - Named arguments are required for any additional parameters.
-- `pub md` makes a method available across files.
+- `pub fn` makes a function available across files, which can then be called as a method.
 
 **Example:**
 
 ``` VEX
-md square(mut x: i32) >> i32 {
+fn square(mut x: i32) >> i32 {
     x * x;
 }
 
 let mut x: i32 = 5;
-x.square()      // equivalent to: x = square(x: x)
+x.square()      // equivalent to: 
+x = square(x: x)
                 // x is now 25
+
+// You can also call it as a normal function:
+x = square(x: x);
 ```
 
 **Type change after method call:**
 
 ``` VEX
-let mut x: i32 = 5;
+let tmut x: i32 = 5;
 x.toString()    // x is now a String
 ```
 
@@ -72,35 +71,35 @@ x.abs();
 
 ### Method Types
 
-A method's applicable type is determined by its first parameter's type. A method declared with `(x: i32)` will only work on `i32`.
+A function's applicable type when called as a method is determined by its first parameter's type. A function declared with `(x: i32)` will only work as a method on `i32`.
 
 ### Generic Methods
 
-Methods can also be generic. The type is inferred automatically from the variable the method is called on — no explicit type annotation needed at the call site:
+Functions can also be generic. When called as a method, the type is inferred automatically from the variable the method is called on — no explicit type annotation needed at the call site:
 
 ``` VEX
-md first<T>(mut x: T, list: vector<T>) >> Option<T> {
+fn first<T>(tmut x: T, list: vector<T>) >> Option<T> {
     // ...
 }
 
-let mut x: i32;
+let tmut x: i32;
 x.first(list: numbers);  // T is inferred as i32 from x
 ```
 
 ### Method Naming
 
-Method names must be **unique within a file** but can share names across files. When calling a method from a specific file, use:
+Function names must be **unique within a file** but can share names across files. When calling a method from a specific file, use:
 
 ``` VEX
-x.file_name::method_name()
+x.file_name::function_name()
 ```
 
 If a namespace alias is defined for the file, you can use the alias instead:
 
 ``` VEX
-x.alias::method_name()
+x.alias::function_name()
 ```
 
-If a method name exists in multiple attached files and no file is specified, VEX looks for the method in the **current file**. If it isn't found there, a compile-time error is raised requiring explicit file qualification.
+If a function name exists in multiple attached files and no file is specified, VEX looks for the function in the **current file**. If it isn't found there, a compile-time error is raised requiring explicit file qualification.
 
-> Method overloading (same name, different types) is **not supported** within a file.
+> Function overloading (same name, different types) is **not supported** within a file.

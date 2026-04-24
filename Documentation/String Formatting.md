@@ -27,7 +27,7 @@ println("FizzBuzz Output: {
         }
     }
 
-    fn FizzBuzz(mut x: i32) >> String {
+    fn FizzBuzz(tmut x: i32) >> String {
         if (x % 3) && (x % 5) == 0 {
             return "FizzBuzz!";
         }

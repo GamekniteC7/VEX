@@ -44,7 +44,7 @@ main(){
     }
 }
 
-fn FizzBuzz(mut x: i32) >> String {
+fn FizzBuzz(tmut x: i32) >> String {
     if (x % 3) && (x % 5) == 0 {
         return "FizzBuzz!";
     }
@@ -73,7 +73,7 @@ main(){
     println(x.square());
 }
 
-md square(mut x: i32) >> i32 {
+fn square(mut x: i32) >> i32 {
     x * x;
 }
 ```
