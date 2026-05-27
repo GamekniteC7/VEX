@@ -1,6 +1,6 @@
-## Code Examples
+# Code Examples
 
-### Hello World
+## Hello World
 
 ``` VEX
 // main.vxl
@@ -17,7 +17,7 @@ fn hello_world() >> () {
 
 ---
 
-### Addition
+## Addition
 
 ``` VEX
 // main.vxl
@@ -34,7 +34,7 @@ fn add(mut a: i32, b: i32) >> i32 {
 
 ---
 
-### FizzBuzz
+## FizzBuzz
 
 ``` VEX
 // main.vxl
@@ -44,7 +44,7 @@ main(){
     }
 }
 
-fn FizzBuzz(tmut x: i32) >> String {
+fn FizzBuzz(tmut x: i32) >> string {
     if (x % 3) && (x % 5) == 0 {
         return "FizzBuzz!";
     }
@@ -55,7 +55,7 @@ fn FizzBuzz(tmut x: i32) >> String {
         return "Buzz!";
     }
     else {
-        return x.toString();
+        return x.to_string();
     }
 }
 ```
@@ -64,7 +64,7 @@ fn FizzBuzz(tmut x: i32) >> String {
 
 ---
 
-### Methods
+## Methods
 
 ``` VEX
 // main.vxl

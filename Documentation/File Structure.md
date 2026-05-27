@@ -1,4 +1,4 @@
-## File Structure
+# File Structure
 
 Every VEX project has one `main.vxl` file. This file contains the entry point of the program — the `main()` function. All other `.vxl` files must be attached to `main.vxl` directly or indirectly to exist in the program.
 
@@ -8,9 +8,9 @@ main(){
 }
 ```
 
-> `main()` is special. It is not declared with `fn` or any visibility modifier. Any function named `main` elsewhere — such as `pub fn main()` in another file — is treated as a regular function, not the entry point. Within `main.vxl` itself, the name `main` is reserved for the entry point only.
+> `main()` is special. It is not declared with `fn` or any visibility modifier. Any function named `main` elsewhere — such as `pub fn main()` in another file — is treated as a regular function, not the entry point.
 
-### Attaching Files
+## Attaching Files
 
 Files are attached using the `attach` keyword. Without attachment, a file is completely invisible to the rest of the program.
 
@@ -47,7 +47,7 @@ main() {
 - The order of `attach` statements does not matter.
 - Circular attachments are a **compile-time error**.
 
-### Namespaces
+## Namespaces
 
 To avoid typing full file names every time you call a function from an attached file, you can define a `NAMESPACE` block to create short aliases.
 
@@ -74,5 +74,5 @@ main() {
 }
 ```
 
-- Technically, `NAMESPACE` blocks can be placed anywhere in the file, but it is customary to place them at the top of the file, typically right after your `attach` statements.
+- `NAMESPACE` blocks need to be placed at the top of the file right after your `attach` statements.
 - You can define multiple `NAMESPACE` blocks in a single file, though it is usually cleaner to group all aliases into one block.

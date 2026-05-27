@@ -1,4 +1,4 @@
-## String Formatting
+# String Formatting
 
 Variables and expressions can be embedded directly into strings using `{}`:
 
@@ -7,7 +7,7 @@ let name: String = "World";
 println("Hello {name}!");   // Hello World!
 ```
 
-Any valid VEX expression can be placed inside `{}`, including function calls, method chains, and arithmetic:
+Any valid VEX expression can be placed inside `{}`, including function calls (if function is not void), method chains, and arithmetic:
 
 ``` VEX
 println("Sum: {add(a: 3, b: 4)}");       // Sum: 7
@@ -17,10 +17,10 @@ println("Result: {a + b}");              // Result of expression
 
 The expression inside `{}` follows normal ownership rules.
 
-Any valid VEX expression can be placed inside {}, including function calls, method chains, and arithmetic. You can even embed entire programs — by opening a new main(){} scope inside the brackets, you create a fully isolated execution environment whose output is inserted into the string:
+You can even embed entire programs — by opening a new main(){} scope inside the brackets, you create a fully isolated execution environment whose output is inserted into the string:
 
 ``` VEX
-println("FizzBuzz Output: {
+println("FizzBuzz Output: \n{
     main() {
         for i in 1..100 {
             println(FizzBuzz(x: &i));
@@ -42,6 +42,18 @@ println("FizzBuzz Output: {
         }
     }
 }");
+```
+
+**Output:***
+
+``` Console
+FizzBuzz Output: 
+1
+2
+Fizz!
+4
+...
+
 ```
 
 The main(){} inside the brackets acts as the entry point of the embedded program. The scope is completely isolated from the surrounding code — variables and functions defined inside do not leak out, and outer variables are not accessible inside.

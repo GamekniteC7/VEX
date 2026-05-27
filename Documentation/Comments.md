@@ -1,4 +1,4 @@
-## Comments
+# Comments
 
 Single line comments use `//`:
 
@@ -15,3 +15,11 @@ Multi-line comments use `/* */`:
     multi-line comment
 */
 ```
+
+Doc comments use `/** */`:
+
+``` VEX
+/**
+    This is a
+    VEX doc comment
+*/

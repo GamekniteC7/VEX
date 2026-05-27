@@ -1,8 +1,8 @@
-## Error Handling
+# Error Handling
 
 VEX has three distinct concepts for handling the absence of values and errors, each serving a different purpose.
 
-### `>> ()` — Void
+## `>> ()` — Void
 
 A function declared with `>> ()` **never** returns a value. It is purely for side effects:
 
@@ -12,7 +12,7 @@ fn hello() >> () {
 }
 ```
 
-### `Option<T>` — Value or None
+## `Option<T>` — Value or None
 
 A function returning `Option<T>` should return a value of type `T` but might return `()`. This is distinct from `>> ()` — the function *intends* to return a value but cannot always do so:
 
@@ -24,7 +24,7 @@ fn find(list: vector<i32>, target: i32) >> Option<i32> {
 
 Since `Option<T>` can return `()`, the compiler enforces that you check for `()` before using the value, consistent with VEX's none-checking rules.
 
-### `Result<T, E>` — Value or Error
+## `Result<T, E>` — Value or Error
 
 A function returning `Result<T, E>` either returns a value of type `T` wrapped in `Ok`, or an error of type `E` wrapped in `Err`:
 
@@ -38,7 +38,7 @@ fn divide(a: f32, b: f32) >> Result<f32, String> {
 }
 ```
 
-### The `?` Operator
+## The `?` Operator
 
 The `?` operator works on both `Option<T>` and `Result<T, E>`. It propagates the failure case early up the call stack, identical to Rust:
 
@@ -56,7 +56,7 @@ fn do_something() >> Option<i32> {
 }
 ```
 
-### `.extract_value()`
+## `.extract_value()`
 
 `.extract_value()` extracts the value from an `Option<T>` or `Result<T, E>`. If the value is `()` or `Err`, it triggers a `panic!`:
 
@@ -68,7 +68,7 @@ let result: i32 = find(list: myList, target: 5).extract_value();
 let result: f32 = divide(a: 5.0, b: 0.0).extract_value();
 ```
 
-### `panic!`
+## `panic!`
 
 `panic!` triggers an unrecoverable error and crashes the program. The `!` is part of the syntax — it is not a macro, but emphasizes the severity:
 
@@ -76,7 +76,7 @@ let result: f32 = divide(a: 5.0, b: 0.0).extract_value();
 panic!("something went terribly wrong");
 ```
 
-### Summary
+## Summary
 
 |Return type|Meaning|Failure case|
 |---|---|---|

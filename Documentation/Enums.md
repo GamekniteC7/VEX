@@ -1,8 +1,8 @@
-## Enums
+# Enums
 
 Enums define a type with a fixed set of possible named variants. Variants can optionally carry named data fields.
 
-### Declaration
+## Declaration
 
 ``` VEX
 enum Shape {
@@ -17,26 +17,26 @@ enum Shape {
 - Use `pub enum` to make the enum available across files.
 - Enums can be nested — a variant can carry another enum as its data.
 
-### Instantiation
+## Instantiation
 
 ``` VEX
 let s: Shape = Circle(radius: 5.0);
 let e: Shape = Empty();
 ```
 
-### Field Access
+## Field Access
 
-Enum variant data is accessed using the `->` operator:
+Enum variant data is accessed using the `.` operator:
 
 ``` VEX
-s->radius   // 5.0
+s.radius   // 5.0
 ```
 
-### Methods
+## Methods
 
 Methods work on enum values just like any other type, determined by the first parameter's type.
 
-### Match Statement
+## Match Statement
 
 A match statement handles each possible variant. **All variants must be covered** — a non-exhaustive match is a compile-time error. A `_` fallback case is supported:
 
@@ -51,12 +51,12 @@ match s {
 
 Data carried by a variant is unpacked and bound to a new name in the match arm. For example `Circle(radius: r)` binds the `radius` field to `r` for use inside that arm.
 
-### Match as Expression
+## Match as Expression
 
 A match can also act as a special function that takes an enum and returns a value based on the variant. It is called like a regular function with named arguments:
 
 ``` VEX
-match area(s: Shape) >> f32 {
+matchex area(s: Shape) >> f32 {
     Circle(radius: r) => { r * r * 3.14; }
     Rectangle(width: w, height: h) => { w * h; }
     Empty() => { return; }
