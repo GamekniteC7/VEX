@@ -59,17 +59,17 @@ let r4: Rectangle = Rectangle(imut width: 5.0, height: 3.0);
 
 ## Field Access
 
-Fields are accessed using the `'` operator:
+Fields are accessed using the `.` operator:
 
 ``` VEX
-r'width    // 5.0
-r'height   // 3.0
+r.width    // 5.0
+r.height   // 3.0
 ```
 
 Nested struct field access chains naturally:
 
 ``` VEX
-line'start'width
+line.start.width
 ```
 
 ## Mutability
@@ -83,7 +83,7 @@ line'start'width
 Methods can be called directly on struct fields. The field must be `mut` since the result is reassigned back to it:
 
 ``` VEX
-r'width.square()
+r.width.square()
 // equivalent to:
-r'width = square(x: r'width);
+r.width = square(x: r.width);
 ```

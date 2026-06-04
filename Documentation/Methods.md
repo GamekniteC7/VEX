@@ -5,9 +5,8 @@ In VEX, there is no special method declaration keyword for methods. Instead, **a
 When called as functions, they behave like normal VEX functions. When called as methods, they behave like VEX methods.
 
 - Methods are called using **dot notation** with parentheses: the value before the dot is automatically passed as the first parameter.
-- Methods **implicitly reassign** the result back to the caller variable. The caller must therefore be at least `mut`.
-- The return type of a method does not need to match the original type — after a method call, the variable's type changes to the return type of the function. If a method changes the variable's type, the variable **must** be declared as `tmut` (type-mutable). Calling a type-changing method on a purely `mut` variable is a compile-time error.
-- Void functions (`>> ()`) can not be called as methods.
+- If the Method is not void, the Method **implicitly reassigns** the result back to the caller variable. The caller must therefore be at least `mut`.
+- The return type of a method does not need to match the original type — after a method call, the variable's type changes to the return type of the function (If the function is not void). If a method changes the variable's type, the variable **must** be declared as `tmut` (type-mutable). Calling a type-changing method on a purely `mut` variable is a compile-time error.
 - Named arguments are required for any additional parameters.
 - `pub fn` makes a function available across files, which can then be called as a method.
 
